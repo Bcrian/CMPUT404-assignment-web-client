@@ -87,8 +87,10 @@ class HTTPClient(object):
 
         if urlparse(url).port != None:
             port = urlparse(url).port
-        else:
+        elif urlparse(url).scheme == 'http':
             port = 80
+        else:
+            port = 443
 
         payload = "GET" + " " + path + " " + "HTTP/1.1\r\n" + \
             "Host: " + host + "\r\n" + "Connection: close\r\n\r\n"
@@ -115,8 +117,10 @@ class HTTPClient(object):
 
         if urlparse(url).port != None:
             port = urlparse(url).port
-        else:
+        elif urlparse(url).scheme == 'http':
             port = 80
+        else:
+            port = 443
 
         if args == None:
             content_length = "Content-length: 0\r\n"
