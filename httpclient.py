@@ -37,24 +37,8 @@ class HTTPResponse(object):
 
 
 class HTTPClient(object):
-    def get_host_port(self, url):
-        if urlparse(url).path != "":
-            path = urlparse(url).path
-        else:
-            path = "/"
-
-        if urlparse(url).hostname != None:
-            host = urlparse(url).hostname
-        else:
-            host = "http://127.0.0.1"
-
-        if urlparse(url).port != None:
-            port = urlparse(url).port
-        else:
-            port = 80
-
-        return [path, host, port]
-
+    #def get_host_port(self, url):
+        
     def connect(self, host, port):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((host, port))
@@ -91,7 +75,21 @@ class HTTPClient(object):
         return buffer.decode('utf-8')
 
     def GET(self, url, args=None):
-        [path, host, port] = self.get_host_port(url)
+        if urlparse(url).path != "":
+            path = urlparse(url).path
+        else:
+            path = "/"
+
+        if urlparse(url).hostname != None:
+            host = urlparse(url).hostname
+        else:
+            host = "http://127.0.0.1"
+
+        if urlparse(url).port != None:
+            port = urlparse(url).port
+        else:
+            port = 80
+
         payload = "GET" + " " + path + " " + "HTTP/1.1\r\n" + \
             "Host: " + host + "\r\n" + "Connection: close\r\n\r\n"
         self.connect(host, port)
@@ -105,16 +103,32 @@ class HTTPClient(object):
         return HTTPResponse(code, body)
 
     def POST(self, url, args=None):
-        [path, host, port] = self.get_host_port(url)
+        if urlparse(url).path != "":
+            path = urlparse(url).path
+        else:
+            path = "/"
+            
+        if urlparse(url).hostname != None:
+            host = urlparse(url).hostname
+        else:
+            host = "http://127.0.0.1"
+
+        if urlparse(url).port != None:
+            port = urlparse(url).port
+        else:
+            port = 80
+
         if args == None:
             content_length = "Content-length: 0\r\n"
             payload = "POST" + " " + path + " " + "HTTP/1.1\r\n" + "Host: " + \
-                host + "\r\n" + content_length + "Connection: close\r\n\r\n"
+                host + "\r\n" + "Content-type: application/x-www-form-urlencoded\r\n" + \
+                content_length + "Connection: close\r\n\r\n"
         else:
             msg = urlencode(args)
             content_length = "Content-length: " + str(len(msg)) + "\r\n"
             payload = "POST" + " " + path + " " + "HTTP/1.1\r\n" + "Host: " + \
-                host + "\r\n" + content_length + "Connection: close\r\n\r\n"
+                host + "\r\n" + "Content-type: application/x-www-form-urlencoded\r\n" + \
+                content_length + "Connection: close\r\n\r\n" + msg
         try:
             self.connect(host, port)
             self.sendall(payload)
